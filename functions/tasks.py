@@ -208,4 +208,27 @@ def load_to_silver_from_api(**kwargs):
 
     logging.info("End loading api_data to Silver")
 
+def load_to_dwh_from_api(**kwargs):
+    logging.info("Start loading api_data to DWH")
+
+    ds = kwargs.get('ds', str(date.today()))
+
+    spark = SparkSession.builder.master('local').appName("load_to_dwh_from_api").getOrCreate()
+
+    gp_conn = BaseHook.get_connection('gp')
+    gp_url = f"jdbc:postgresql://{gp_conn.host}:{gp_conn.port}/{gp_conn.schema}"
+    gpcreds = {"user": gp_conn.login, "password": gp_conn.password}
+
+    try:
+        df_api = spark.read.parquet(os.path.join(os.path.join('/', 'datalake', 'silver', 'api')))
+
+        df_api.write.jdbc(gp_url, table=,)
+
+        logging.info(f"Load '{df_api.count()}' records")
+
+    except AnalysisException as e:
+        logging.info(e)
+
+    logging.info("End loading api_data to DWH")
+
 
