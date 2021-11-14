@@ -1,0 +1,1 @@
+select string_agg(table_name,',') from information_schema.tables where table_type = 'BASE TABLE' and table_schema NOT IN ('pg_catalog', 'information_schema')
