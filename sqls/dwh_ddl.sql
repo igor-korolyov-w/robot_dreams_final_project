@@ -24,13 +24,6 @@ with (appendoptimized=true, orientation=column, compresstype=zlib, compresslevel
 distributed by (department_id);
 
 
-CREATE TABLE public.dim_location_areas (
-	area_id int4 NOT NULL,
-	area varchar(51) NOT NULL
-)
-with (appendoptimized=true, orientation=column, compresstype=zlib, compresslevel=5)
-distributed by (area_id);
-
 CREATE TABLE public.dim_products (
 	product_id int4 NOT NULL,
 	product_name varchar(127) NOT NULL,
@@ -40,21 +33,6 @@ CREATE TABLE public.dim_products (
 with (appendoptimized=true, orientation=column, compresstype=zlib, compresslevel=5)
 distributed by (product_id);
 
-
-CREATE TABLE public.dim_store_types (
-	store_type_id int4 NOT NULL,
-	store_type varchar(51) NOT NULL
-)
-with (appendoptimized=true, orientation=column, compresstype=zlib, compresslevel=5)
-distributed by (store_type_id);
-
-CREATE TABLE public.dim_stores (
-	store_id int4 NOT NULL,
-	location_area_id int4 NOT NULL,
-	store_type_id int4 NOT NULL
-)
-with (appendoptimized=true, orientation=column, compresstype=zlib, compresslevel=5)
-distributed by (store_id);
 
 CREATE TABLE public.dim_time (
 	action_date date NOT NULL,
@@ -80,7 +58,6 @@ distributed by (action_date);
 
 CREATE TABLE public.fact_orders (
 	order_id int8 NOT NULL,
-	store_id int4 NOT NULL,	
 	client_id int4 NOT NULL,
 	product_id int4 NOT NULL,
 	quantity int4 NOT NULL,
@@ -90,7 +67,6 @@ with (appendoptimized=true, orientation=column, compresstype=zlib, compresslevel
 distributed by (client_id);
 
 CREATE TABLE public.fact_oos (
-	store_id int4 NOT NULL,	
 	product_id int4 NOT NULL,
 	oos_date date NOT null
 )

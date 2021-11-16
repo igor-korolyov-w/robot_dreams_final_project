@@ -120,6 +120,39 @@ def load_to_silver_from_pg(table, **kwargs):
 
     logging.info(f"End loading table '{table}' to Silver. Load '{table_df.count()}' records")
 
+def load_to_dwh_from_pg(table, **kwargs):
+    logging.info(f"Start loading table '{table}' to DWH")
+
+    spark = SparkSession.builder \
+        .config('spark.driver.extraClassPath', '/home/user/postgresql-42.3.1.jar') \
+        .master('local') \
+        .appName("load_to_dwh_from_pg") \
+        .getOrCreate()
+
+    gp_conn = BaseHook.get_connection('gp')
+    gp_url = f"jdbc:postgresql://{gp_conn.host}:{gp_conn.port}/{gp_conn.schema}"
+    gpcreds = {"user": gp_conn.login, "password": gp_conn.password}
+    mode = "overwrite"
+
+    try:
+        df_api = spark.read.parquet(os.path.join(os.path.join('/', 'datalake', 'silver', 'dshop', table)))
+
+        if table == "orders":
+            pg_table = "fact_orders"
+            df_api = df_api.drop('store_id')
+
+        else:
+            pg_table = 'dim_'+table
+
+        df_api.write.jdbc(url=gp_url, table=pg_table, mode=mode, properties=gpcreds)
+
+        logging.info(f"Load '{df_api.count()}' records")
+
+    except AnalysisException as e:
+        logging.info(e)
+
+    logging.info(f"End loading table '{table}' to DWH")
+
 
 
 def load_to_bronze_from_api(**kwargs):
@@ -172,6 +205,7 @@ def load_to_bronze_from_api(**kwargs):
     logging.info("End loading api_data to Bronze")
 
 
+
 def load_to_silver_from_api(**kwargs):
     logging.info("Start loading api_data to Silver")
 
@@ -211,18 +245,23 @@ def load_to_silver_from_api(**kwargs):
 def load_to_dwh_from_api(**kwargs):
     logging.info("Start loading api_data to DWH")
 
-    ds = kwargs.get('ds', str(date.today()))
-
-    spark = SparkSession.builder.master('local').appName("load_to_dwh_from_api").getOrCreate()
+    spark = SparkSession.builder \
+        .config('spark.driver.extraClassPath', '/home/user/postgresql-42.3.1.jar') \
+        .master('local') \
+        .appName("load_to_dwh_from_api") \
+        .getOrCreate()
 
     gp_conn = BaseHook.get_connection('gp')
     gp_url = f"jdbc:postgresql://{gp_conn.host}:{gp_conn.port}/{gp_conn.schema}"
-    gpcreds = {"user": gp_conn.login, "password": gp_conn.password}
+    #gpcreds = {"user": gp_conn.login, "password": gp_conn.password}
+    properties = {"user": gp_conn.login, "password": gp_conn.password}
+    mode = "overwrite"
 
     try:
         df_api = spark.read.parquet(os.path.join(os.path.join('/', 'datalake', 'silver', 'api')))
+        df_api = df_api.select(F.col("date").alias("date_oos"), F.col("product_id").alias("product_id"))
 
-        df_api.write.jdbc(gp_url, table=,)
+        df_api.write.jdbc(url=gp_url, table="fact_oos", mode=mode, properties=properties)
 
         logging.info(f"Load '{df_api.count()}' records")
 
