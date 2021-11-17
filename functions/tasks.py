@@ -253,7 +253,6 @@ def load_to_dwh_from_api(**kwargs):
 
     gp_conn = BaseHook.get_connection('gp')
     gp_url = f"jdbc:postgresql://{gp_conn.host}:{gp_conn.port}/{gp_conn.schema}"
-    #gpcreds = {"user": gp_conn.login, "password": gp_conn.password}
     properties = {"user": gp_conn.login, "password": gp_conn.password}
     mode = "overwrite"
 
