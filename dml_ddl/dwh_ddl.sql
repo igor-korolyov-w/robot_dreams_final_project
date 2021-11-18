@@ -9,8 +9,7 @@ distributed by (aisle_id);
 
 CREATE TABLE public.dim_clients (
 	client_id serial4 NOT NULL,
-	fullname varchar(127) NOT NULL,
-	location_area_id int2 NOT NULL
+	fullname varchar(127) NOT NULL
 )
 with (appendoptimized=true, orientation=column, compresstype=zlib, compresslevel=5)
 distributed by (client_id);
@@ -18,7 +17,7 @@ distributed by (client_id);
 
 CREATE TABLE public.dim_departments (
 	department_id int4 NOT NULL,
-	department_name varchar(51) NOT NULL
+	department varchar(51) NOT NULL
 )
 with (appendoptimized=true, orientation=column, compresstype=zlib, compresslevel=5)
 distributed by (department_id);
@@ -71,6 +70,4 @@ CREATE TABLE public.fact_oos (
 	oos_date date NOT null
 )
 with (appendoptimized=true, orientation=column, compresstype=zlib, compresslevel=5)
-distributed by (oos_date);
-
-
+distributed by (product_id);

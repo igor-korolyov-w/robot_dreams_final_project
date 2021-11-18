@@ -107,6 +107,7 @@ def load_to_silver_from_pg(table, **kwargs):
 
         elif table == "orders":
             table_df = table_df.filter(table_df.order_date >= '2021-02-01')
+            table_df.na.drop()
 
         elif table == "products":
             table_df = table_df.withColumn("department_id", F.when(table_df.department_id == 1, 101).otherwise(table_df.department_id))

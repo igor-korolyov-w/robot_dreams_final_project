@@ -9,14 +9,14 @@ table_tasks_pg_to_silver = []
 table_tasks_pg_to_dwh = []
 
 dag_pg = DAG(
-    dag_id="a_pg_data_pipeline9",
+    dag_id="a_pg_data_pipeline11",
     description="pg data pipeline",
-    start_date=datetime(2021, 11, 14, 14, 30),
+    start_date=datetime(2021, 11, 17, 14, 30),
     schedule_interval='@daily'
 )
 
 dag_api = DAG(
-    dag_id="api_data_pipeline9",
+    dag_id="api_data_pipeline11",
     description="api data pipeline",
     start_date=datetime(2021, 8, 30, 14, 30),
     end_date=datetime(2021, 9, 2, 14, 30),
